@@ -1,0 +1,222 @@
+@import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter/Inter-VariableFont_opsz,wght.ttf") format("truetype");
+  font-weight: 100 900; /* variable weight range */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter/Inter-Italic-VariableFont_opsz,wght.ttf")
+    format("truetype");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/Manrope/Manrope-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900; /* variable weight range */
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  font-family: "Manrope", sans-serif;
+  /* font-family: "Manrope", sans-serif; */
+  font-optical-sizing: auto;
+}
+.font-manrope {
+  font-family: 'Manrope', sans-serif !important;
+}
+:root {
+  --color-background: #ffffff;
+  --color-background-two: #fafafa;
+  --color-foreground: #0c0e12;
+  --color-muted-foreground: #535862;
+  --color-background-blue: #175cd3;
+  --color-primary: #155eef;
+  --color-primary-foreground: #ffffff;
+  --color-black-two: #181d27;
+  --color-text-white: #ffff;
+  --color-text-accent-two:'#414651';
+}
+
+/* ------- Dark overrides ------- */
+.dark {
+  --color-background: #0c0e12;
+  --color-background-two: #13161b;
+  --color-foreground: #ffffff;
+  --color-muted-foreground: #94979c;
+  /* --color-background-blue: #101828; */
+  --color-primary: #cecfd2;
+  --color-primary-foreground: #ffffff;
+  --color-black-two: #f7f7f7;
+  --color-text-white: #f7f7f7;
+  --color-text-accent-two:'#fff';
+
+}
+
+/* Utilities mapping */
+@layer utilities {
+  .bg-background {
+    background-color: var(--color-background);
+  }
+
+  .bg-background-two {
+    background-color: var(--color-background-two);
+  }
+
+  .text-black {
+    color: var(--color-foreground);
+  }
+  .text-black-two {
+    color: var(--color-black-two);
+  }
+  .text-white {
+    color: var(--color-text-white);
+  }
+  .text-accent {
+    color: var(--color-muted-foreground);
+  }
+  .text-accent-two{
+    color: var(--color-text-accent-two);  
+  }
+
+  .bg-blue-background {
+    background-color: var(--color-background-blue);
+  }
+
+  .text-blue {
+    color: var(--color-primary);
+  }
+
+  .text-white-foreground {
+    color: var(--color-primary-foreground);
+  }
+}
+
+.btn-primary-color {
+  background-color: #155eef;
+  color: #ffffff;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-primary-color:hover {
+  background-color: #1e40af;
+}
+
+.btn-primary-color:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #1e40af, 0 0 0 4px white;
+}
+
+/* Slider Testimonial */
+.swiper-pagination-bullet {
+  background-color: #d1d5db; /* gray-300 */
+  opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #2563eb; /* blue-600 */
+}
+
+/* Loader */
+@keyframes loader {
+  15% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(calc(250px - 20px));
+  }
+  65% {
+    transform: translateX(calc(250px - 20px));
+  }
+  95% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes loading-text {
+  0% {
+    content: "Loading";
+  }
+  25% {
+    content: "Loading.";
+  }
+  50% {
+    content: "Loading..";
+  }
+  75% {
+    content: "Loading...";
+  }
+}
+
+@keyframes bounce-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-40px);
+  }
+}
+
+.animate-bounce-slow {
+  z-index: 9999;
+  animation: bounce-slow 6s ease-in-out infinite;
+}
+
+
+/* Toastify Dark Mode Override */
+.dark .Toastify__toast {
+  background: #101828 !important; /* dark gray */
+  color: #fff !important;
+}
+
+.dark .Toastify__progress-bar {
+  background: #cecfd2 !important; /* blue */
+}
+.dark .Toastify__checkbox {
+  background-color: #cecfd2 !important;
+}
+
+/* Make toast wider */
+.Toastify__toast {
+  min-width: 380px !important;
+  border-radius: 10px !important;
+}
+.Toastify__toast {
+  /* backdrop-filter: blur(12px); */
+  /* background: rgba(255, 255, 255, 0.7) !important; */
+  /* box-shadow: 0 8px 20px rgba(0,0,0,0.2); */
+  background-color: #175cd3 !important;
+color: #fff !important;
+  font-size: 15px;
+  padding: 14px !important;
+}
+
+.Toastify__progress-bar {
+  background: #f7f7f7 !important; /* blue */
+}
+
+.Toastify__toast--success svg {
+  fill: #f7f7f7;  /* changes the icon color */
+}
+.react-tel-input .flag-dropdown .arrow {
+          display: none;
+        }
+        .react-tel-input .selected-flag:hover {
+          background-color: transparent;
+
+        }

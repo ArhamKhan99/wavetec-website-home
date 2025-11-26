@@ -1,0 +1,71 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  BUILD_DIR: build_artifacts
+  NODE_ENV: production
+
+# -------------------------------
+#  BUILD STAGE
+# -------------------------------
+build_frontend:
+  stage: build
+  image: node:20-alpine
+  script:
+    - echo " Installing dependencies..."
+    - npm ci
+
+    - echo " Building Next.js project..."
+    - npm run build
+
+    - echo " Preparing build artifacts..."
+    - mkdir -p $BUILD_DIR
+    - cp -r .next $BUILD_DIR/
+    - cp -r public $BUILD_DIR/
+    - cp -r src $BUILD_DIR/
+    - cp package.json $BUILD_DIR/
+    - cp package-lock.json $BUILD_DIR/
+    - cp ecosystem.config.js $BUILD_DIR/
+
+  artifacts:
+    paths:
+      - $BUILD_DIR/
+    expire_in: 1 day
+
+# -------------------------------
+#  DEPLOY STAGE
+# -------------------------------
+deploy_to_server:
+  stage: deploy
+  image: alpine:latest
+  only:
+    - main
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+  script:
+    - echo " Connecting to server..."
+    - ssh -o StrictHostKeyChecking=no "$DEPLOY_USER@$DEPLOY_SERVER" "echo Connected successfully!"
+
+    - echo " Creating deployment directory..."
+    - ssh -o StrictHostKeyChecking=no "$DEPLOY_USER@$DEPLOY_SERVER" "
+        sudo mkdir -p /var/www/wavetec-frontend &&
+        sudo chown -R $DEPLOY_USER:$DEPLOY_USER /var/www/wavetec-frontend
+      "
+
+    - echo " Copying build artifacts..."
+    - scp -o StrictHostKeyChecking=no -r "$BUILD_DIR"/. "$DEPLOY_USER@$DEPLOY_SERVER:/var/www/wavetec-frontend/"
+
+    - echo " Installing dependencies and restarting PM2..."
+    - ssh -o StrictHostKeyChecking=no "$DEPLOY_USER@$DEPLOY_SERVER" "
+        cd /var/www/wavetec-frontend &&
+        npm ci --omit=dev &&
+        pm2 restart wavetec-website || pm2 start ecosystem.config.js --name 'wavetec-website' -- start
+      "
+  dependencies:
+    - build_frontend
+  variables:
+    GIT_STRATEGY: none
