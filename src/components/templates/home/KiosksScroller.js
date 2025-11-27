@@ -243,7 +243,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function KioskScrollSection({
   prefix = "block2",
-  frameCount = 500,
+  frameCount = 100,
   folder = "/assets/",
   frameExt = "png",
   data = {},
@@ -299,7 +299,7 @@ export default function KioskScrollSection({
         scrollTrigger: {
           trigger: ".scroll-section",
           start: "top top",
-          end: "200% bottom",
+         end: `${frameCount}%`,
           scrub: 1,
           pin: true,
         },
