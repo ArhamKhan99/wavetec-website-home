@@ -232,7 +232,6 @@
 //     </section>
 //   );
 // }
-
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -243,17 +242,18 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function KioskScrollSection({
   prefix = "block2",
-  frameCount = 100,
+  frameCount = 500,
   folder = "/assets/",
   frameExt = "png",
   data = {},
   value
 }) {
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);   // 👈 UNIQUE per-component
   const imagesRef = useRef([]);
   const loadedMap = useRef({});
 
-  // Load frame function
+  // Load lazy frame
   const loadFrame = (index, callback) => {
     if (loadedMap.current[index]) {
       callback && callback(imagesRef.current[index]);
@@ -279,7 +279,6 @@ export default function KioskScrollSection({
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    // STEP 1 — load first frame and set canvas sizing correctly
     loadFrame(0, (firstImg) => {
       canvas.width = firstImg.naturalWidth;
       canvas.height = firstImg.naturalHeight;
@@ -290,28 +289,25 @@ export default function KioskScrollSection({
 
       ctx.drawImage(firstImg, 0, 0, canvas.width, canvas.height);
 
-      // STEP 2 — Now initialize scroll animation (AFTER size is fixed)
       let state = { frame: 0 };
 
       gsap.to(state, {
         frame: frameCount - 1,
         ease: "none",
         scrollTrigger: {
-          trigger: ".scroll-section",
+          trigger: containerRef.current,   // 👈 Unique trigger for every instance
           start: "top top",
-          end: "200% bottom",
-          scrub: 1,
+          end: `${frameCount}%`,           // Apple-smooth scroll
+          scrub: true,
           pin: true,
         },
         onUpdate: () => {
           const i = Math.floor(state.frame);
 
-          // lazy load next frame
           loadFrame(i, (img) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-            // Preload next frames too
             loadFrame(i + 1);
             loadFrame(i + 2);
           });
@@ -321,7 +317,7 @@ export default function KioskScrollSection({
   }, []);
 
   return (
-    <section className="scroll-section bg-black" style={{ minHeight: "100vh" }}>
+    <section ref={containerRef} className="scroll-section bg-black" style={{ minHeight: "100vh" }}>
       <div className="w-full bg-black">
         <div
           className="w-[96vw] rounded-[10px] mx-auto h-[96vh] bg-no-repeat bg-center bg-cover flex items-center"
@@ -348,6 +344,7 @@ export default function KioskScrollSection({
     </section>
   );
 }
+
 
 
 // video approach
