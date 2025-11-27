@@ -299,7 +299,7 @@ export default function KioskScrollSection({
         scrollTrigger: {
           trigger: ".scroll-section",
           start: "top top",
-         end: `${frameCount}%`,
+          end: "200% bottom",
           scrub: 1,
           pin: true,
         },
