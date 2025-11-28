@@ -116,7 +116,7 @@ export default function MapPage() {
             <h1 className="font-normal text-[50px] text-[#0099FF]">Global <span className="text-white">Presence</span></h1>
         </div>
         <Image
-          src="/assets/map.png"
+          src="/assets/map.webp"
           alt="world map"
           width={1421}
           height={781}

@@ -1,7 +1,7 @@
 import Navbar from "@/components/layout/home/Navbar";
 
 export default function Hero({
-  videoSrc = "/assets/video/waves-hero.mp4",
+  videoSrc = "/assets/video/waves-hero.mov",
   overlayOpacity = 40,
   title = "Make every visit feel seamless. Solutions that fuse",
   subtitle = "Innovation, Design, Manufacturing, Data & AI with humans at the core.",
@@ -18,7 +18,7 @@ export default function Hero({
         playsInline
         className="absolute inset-0 w-full h-full object-cover z-0 opacity-95"
       >
-        <source src={videoSrc} type="video/mp4" />
+        <source src={videoSrc} />
       </video>
 
       {/* Overlay */}
