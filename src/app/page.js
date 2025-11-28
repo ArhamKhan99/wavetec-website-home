@@ -16,7 +16,7 @@ export default function Home() {
 
       {/* <KioskScrollSection prefix ="block2" frameCount = "551"  folder = "/assets/"  frameExt = "png" data={{heading:"Self-Service Kiosks & ATMs",description:"Empower your customers; when, how and where they want.",buttonText:"Discover how it works"}} /> */}
       {/* <KioskScrollSection prefix ="ezgif-frame" frameCount = "100"  folder = "/assets/"   frameExt = "png" data={{heading:"CX Analytics Platform",description:"Visualize, Measure and take action on every touch point.",buttonText:"Discover how it works"}} value={3}/> */}
-      <KioskScrollSection prefix ="ezgif-frame" frameCount = "42"  folder = "/assets/kiosk/"   frameExt = "webp" data={{heading:"Self-Service Kiosks & ATMs",description:"Empower your customers; when, how and where they want.",buttonText:"Discover how it works"}} value={3}/>
+      <KioskScrollSection prefix ="block2" frameCount = "551"  folder = "/assets/kiosk-new/"   frameExt = "webp" data={{heading:"Self-Service Kiosks & ATMs",description:"Empower your customers; when, how and where they want.",buttonText:"Discover how it works"}} value={4}/>
       <KioskScrollSection prefix ="ezgif-frame" frameCount = "100"  folder = "/assets/dashboard/"   frameExt = "webp" data={{heading:"CX Analytics Platform",description:"Visualize, Measure and take action on every touch point.",buttonText:"Discover how it works"}} value={3}/>
       
       <Integration />
