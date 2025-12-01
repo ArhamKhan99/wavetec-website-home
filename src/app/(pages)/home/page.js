@@ -4,7 +4,6 @@ import HeroLogosSection from "@/components/templates/home/HeroLogosSection";
 import Integration from "@/components/templates/home/Integration";
 import KioskScrollSection from "@/components/templates/home/KiosksScroller";
 import VirtualQueueSection from "@/components/templates/home/VirtualQueueSection";
-import Image from "next/image";
 
 export default function Home() {
   return (
