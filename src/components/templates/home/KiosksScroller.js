@@ -257,7 +257,7 @@
 // }
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
@@ -275,79 +275,70 @@ export default function KioskScrollSection({
   const imagesRef = useRef([]);
   const animationRef = useRef(null);
 
-  const INITIAL_FRAMES = 60; // 👉 First 60 frames fast load
+  const [allLoaded, setAllLoaded] = useState(false); // ← track loading
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
-    const loaded = {};
 
     // -----------------------------
-    // 🔥 Function: Load ANY Frame
+    // 🔥 Load a single frame
     // -----------------------------
     const loadFrame = (i) => {
       return new Promise((resolve) => {
         const img = new Image();
         img.decoding = "async";
+
         img.src =
           value === 3
             ? `${folder}${prefix}-${String(i).padStart(3, "0")}.${frameExt}`
             : `${folder}${prefix}_${String(i).padStart(4, "0")}.${frameExt}`;
 
-        img.onload = () => {
-          loaded[i] = true;
-          resolve(img);
-        };
+        img.onload = () => resolve(img);
       });
     };
 
-    // --------------------------------------
-    // 🔥 Step 1: Preload FIRST 60 frames FAST
-    // --------------------------------------
-    const preloadInitialFrames = async () => {
-      const arr = [];
+    // --------------------------------
+    // 🔥 Step 1 — Load FIRST FRAME ONLY
+    // --------------------------------
+    const loadFirstFrame = async () => {
+      const img = await loadFrame(1);
+      imagesRef.current[1] = img;
 
-      for (let i = 1; i <= INITIAL_FRAMES; i++) {
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+
+      ctx.drawImage(img, 0, 0);
+    };
+
+    // -----------------------------------------------
+    // 🔥 Step 2 — Load ALL frames in background safely
+    // -----------------------------------------------
+    const loadAllFrames = async () => {
+      for (let i = 1; i <= frameCount; i++) {
         const img = await loadFrame(i);
-        arr[i] = img;
+        imagesRef.current[i] = img;
       }
 
-      imagesRef.current = arr;
-
-      // Draw first frame
-      const first = arr[1];
-      canvas.width = first.naturalWidth;
-      canvas.height = first.naturalHeight;
-      ctx.drawImage(first, 0, 0);
-
-      return true;
+      setAllLoaded(true); // all frames ready
     };
 
-    // --------------------------------------------------------
-    // 🔥 Step 2: BACKGROUND LOAD REMAINING FRAMES (NON-BLOCKING)
-    // --------------------------------------------------------
-    const backgroundLoader = () => {
-      let index = INITIAL_FRAMES + 1;
+    loadFirstFrame();
+    loadAllFrames();
 
-      const loadNext = async () => {
-        if (index > frameCount) return;
+  }, [prefix, frameCount, folder, frameExt, value]);
 
-        const img = await loadFrame(index);
-        imagesRef.current[index] = img;
+  // ---------------------------------------------------------
+  // 🔥 Step 3 — Start Scroll Animation ONLY after allLoaded
+  // ---------------------------------------------------------
+  useEffect(() => {
+    if (!allLoaded) return; // wait until everything ready
 
-        index++;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
 
-        requestIdleCallback(loadNext, { timeout: 50 }); // 🟢 main thread free
-      };
-
-      requestIdleCallback(loadNext);
-    };
-
-    // --------------------------------------
-    // 🔥 Step 3: Drawing
-    // --------------------------------------
     const drawFrame = (i) => {
       const img = imagesRef.current[i];
       if (!img) return;
@@ -355,43 +346,31 @@ export default function KioskScrollSection({
       ctx.drawImage(img, 0, 0);
     };
 
-    // --------------------------------------
-    // 🔥 Step 4: MAIN PROCESS
-    // --------------------------------------
-    const init = async () => {
-      await preloadInitialFrames();
-      backgroundLoader(); // Start loading in background
+    const state = { frame: 1 };
+    const trigger = canvas.closest(".scroll-section");
 
-      const state = { frame: 1 };
-      const trigger = canvas.closest(".scroll-section");
+    ScrollTrigger.getAll().forEach((st) => {
+      if (st.trigger === trigger) st.kill();
+    });
 
-      ScrollTrigger.getAll().forEach((st) => {
-        if (st.trigger === trigger) st.kill();
-      });
-
-      animationRef.current = gsap.to(state, {
-        frame: frameCount - 1,
-        ease: "none",
-        scrollTrigger: {
-          trigger,
-          start: "top top",
-          end: "200% bottom",
-          scrub: 1,
-          pin: true,
-        },
-        onUpdate: () => {
-          drawFrame(Math.floor(state.frame));
-        },
-      });
-    };
-
-    init();
+    animationRef.current = gsap.to(state, {
+      frame: frameCount - 1,
+      ease: "none",
+      scrollTrigger: {
+        trigger,
+        start: "top top",
+        end: "200% bottom",
+        scrub: 1,
+        pin: true,
+      },
+      onUpdate: () => drawFrame(Math.floor(state.frame)),
+    });
 
     return () => {
       animationRef.current?.scrollTrigger?.kill();
       animationRef.current?.kill();
     };
-  }, [prefix, frameCount, folder, frameExt, value]);
+  }, [allLoaded]);
 
   return (
     <section className="scroll-section bg-black" style={{ minHeight: "100vh" }}>
@@ -414,9 +393,17 @@ export default function KioskScrollSection({
 
           <div className="h-full w-full mx-auto relative rounded-[10px]">
             <canvas ref={canvasRef} />
+
+            {/* 🔥 Loading Overlay UNTIL all frames ready */}
+            {!allLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white text-xl">
+                Loading animation...
+              </div>
+            )}
           </div>
         </div>
       </div>
     </section>
   );
 }
+
