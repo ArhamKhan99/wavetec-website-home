@@ -14,7 +14,7 @@ export default function Home() {
       <VirtualQueueSection />
 
       {/* <KioskScrollSection prefix ="block2" frameCount = "551"  folder = "/assets/"  frameExt = "png" data={{heading:"Self-Service Kiosks & ATMs",description:"Empower your customers; when, how and where they want.",buttonText:"Discover how it works"}} /> */}
-      <KioskScrollSection prefix ="ezgif-frame" frameCount = "100"  folder = "/assets/"   frameExt = "png" data={{heading:"CX Analytics Platform",description:"Visualize, Measure and take action on every touch point.",buttonText:"Discover how it works"}} value={3}/>
+      {/* <KioskScrollSection prefix ="ezgif-frame" frameCount = "100"  folder = "/assets/"   frameExt = "png" data={{heading:"CX Analytics Platform",description:"Visualize, Measure and take action on every touch point.",buttonText:"Discover how it works"}} value={3}/> */}
       <Integration />
       <KioskScrollSection prefix ="ezgif-frame" frameCount = "100"  folder = "/assets/avatar/"   frameExt = "png" data={{heading:"AI",description:"Take the experience ",buttonText:"Discover how it works"}} value={3}/>
         <GlobalPresence />
