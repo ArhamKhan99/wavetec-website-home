@@ -274,8 +274,7 @@ export default function KioskScrollSection({
   const canvasRef = useRef(null);
   const imagesRef = useRef([]);
   const animationRef = useRef(null);
-
-  const [allLoaded, setAllLoaded] = useState(false); // ← track loading
+  const [allLoaded, setAllLoaded] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -283,58 +282,48 @@ export default function KioskScrollSection({
 
     const ctx = canvas.getContext("2d");
 
-    // -----------------------------
-    // 🔥 Load a single frame
-    // -----------------------------
-    const loadFrame = (i) => {
-      return new Promise((resolve) => {
+    const loadFrame = (i) =>
+      new Promise((resolve) => {
         const img = new Image();
         img.decoding = "async";
-
         img.src =
           value === 3
             ? `${folder}${prefix}-${String(i).padStart(3, "0")}.${frameExt}`
             : `${folder}${prefix}_${String(i).padStart(4, "0")}.${frameExt}`;
-
         img.onload = () => resolve(img);
       });
-    };
 
-    // --------------------------------
-    // 🔥 Step 1 — Load FIRST FRAME ONLY
-    // --------------------------------
+    // Step 1 — load first frame instantly
     const loadFirstFrame = async () => {
-      const img = await loadFrame(1);
-      imagesRef.current[1] = img;
+      const first = await loadFrame(1);
+      imagesRef.current[1] = first;
 
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
+      // Maintain aspect ratio and fit canvas to container
+      canvas.width = first.naturalWidth;
+      canvas.height = first.naturalHeight;
 
-      ctx.drawImage(img, 0, 0);
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+
+      ctx.drawImage(first, 0, 0, canvas.width, canvas.height);
     };
 
-    // -----------------------------------------------
-    // 🔥 Step 2 — Load ALL frames in background safely
-    // -----------------------------------------------
+    // Step 2 — load all frames in background
     const loadAllFrames = async () => {
       for (let i = 1; i <= frameCount; i++) {
         const img = await loadFrame(i);
         imagesRef.current[i] = img;
       }
-
-      setAllLoaded(true); // all frames ready
+      setAllLoaded(true);
     };
 
     loadFirstFrame();
     loadAllFrames();
-
   }, [prefix, frameCount, folder, frameExt, value]);
 
-  // ---------------------------------------------------------
-  // 🔥 Step 3 — Start Scroll Animation ONLY after allLoaded
-  // ---------------------------------------------------------
+  // Step 3 — Scroll animation only after all frames loaded
   useEffect(() => {
-    if (!allLoaded) return; // wait until everything ready
+    if (!allLoaded) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -343,7 +332,7 @@ export default function KioskScrollSection({
       const img = imagesRef.current[i];
       if (!img) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
 
     const state = { frame: 1 };
@@ -370,16 +359,16 @@ export default function KioskScrollSection({
       animationRef.current?.scrollTrigger?.kill();
       animationRef.current?.kill();
     };
-  }, [allLoaded]);
+  }, [allLoaded, frameCount]);
 
   return (
     <section className="scroll-section bg-black" style={{ minHeight: "100vh" }}>
       <div className="w-full bg-black">
         <div
-          className="w-[96vw] rounded-[10px] mx-auto h-[96vh] bg-no-repeat bg-center bg-cover flex items-center"
+          className="w-[96vw] rounded-[10px] mx-auto h-[96vh] bg-no-repeat bg-center bg-cover flex items-center relative"
           style={{ backgroundImage: "url('/assets/bg-virtual.png')" }}
         >
-          <div className="w-full h-full flex flex-col justify-center items-start pl-14 ">
+          <div className="w-full h-full flex flex-col justify-center items-start pl-14 z-10">
             <h1 className="font-normal text-3xl md:text-3xl xl:text-[50px] text-white">
               {data.heading || "Self-Service Kiosks & ATM"}
             </h1>
@@ -391,19 +380,18 @@ export default function KioskScrollSection({
             </button>
           </div>
 
-          <div className="h-full w-full mx-auto relative rounded-[10px]">
-            <canvas ref={canvasRef} />
+          <canvas
+            ref={canvasRef}
+            className="absolute top-0 left-0 w-full h-full rounded-[10px] z-0"
+          />
 
-            {/* 🔥 Loading Overlay UNTIL all frames ready */}
-            {!allLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white text-xl">
-                Loading animation...
-              </div>
-            )}
-          </div>
+          {!allLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
+              <span className="text-white text-xl">Loading animation...</span>
+            </div>
+          )}
         </div>
       </div>
     </section>
   );
 }
-
