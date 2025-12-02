@@ -14,10 +14,11 @@ export default function Home() {
       <HeroLogosSection />
       <VirtualQueueSection />
       <ScrollVideoSection videoSrc="/assets/demo.mp4" containerHeight="auto" start="top top" end="bottom top" data={{heading:"Self-Service Kiosks & ATMs",description:"Empower your customers; when, how and where they want.",buttonText:"Discover how it works"}} />
-
+    <ScrollVideoSection videoSrc="/assets/dashboard.mp4" containerHeight="auto" start="top top" end="bottom top" data={{heading:"AI",description:"Take the experience",buttonText:"Discover how it works"}} />
       {/* <KioskScrollSection prefix ="block2" frameCount = "551"  folder = "/assets/kiosk-new/"  frameExt = "webp" data={{heading:"Self-Service Kiosks & ATMs",description:"Empower your customers; when, how and where they want.",buttonText:"Discover how it works"}} value={4} /> */}
       {/* <KioskScrollSection prefix ="ezgif-frame" frameCount = "100"  folder = "/assets/dashboard/"   frameExt = "webp" data={{heading:"CX Analytics Platform",description:"Visualize, Measure and take action on every touch point.",buttonText:"Discover how it works"}} value={3}/> */}
       <Integration />
+      <ScrollVideoSection videoSrc="/assets/avatar-video.mp4" containerHeight="auto" start="top top" end="bottom top" data={{heading:"AI",description:"Take the experience",buttonText:"Discover how it works"}} />
       {/* <KioskScrollSection prefix ="ezgif-frame" frameCount = "100"  folder = "/assets/avatar/"   frameExt = "webp" data={{heading:"AI",description:"Take the experience ",buttonText:"Discover how it works"}} value={3}/> */}
         <GlobalPresence />
     </div>
